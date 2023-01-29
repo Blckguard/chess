@@ -1,3 +1,5 @@
+# classes created already but not in use yet, will later use to assign unique id and
+# location coordinates in pairs f.e. (4,1) = d1 
 class white_pieces:
     def __init__(self):
         self.id
@@ -16,7 +18,10 @@ class black_pieces:
         self.id = id
         self.location = location
 
+# note to self: create dictionary with piece and coordinate pairs so i can use that dict in the create_board function
+# do it smart so you can easily access the piece and coordinates for later use
 def create_board():
+    # creates the board dictionary without pieces yet
 
     columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     minus_columns = ['b', 'd', 'f', 'h'] 
@@ -24,6 +29,8 @@ def create_board():
     counter = 2
     
     for column in columns:
+        # iterating through the columns and rows to create coordinate pairs which get added to the
+        # dictionary together with a '+' for a white field or '-' for a black field
         if column in minus_columns:
             for row in range(1,9):
                 if counter % 2 == 1:
@@ -41,6 +48,8 @@ def create_board():
     return board
 
 def draw_board():
+    # draws the board onto the console using the dictionary created in the create_board function
+
     board = create_board()
     return     f"""
     8 |{board["a8"]}|{board["b8"]}|{board["c8"]}|{board["d8"]}|{board["e8"]}|{board["f8"]}|{board["g8"]}|{board["h8"]}|
@@ -53,5 +62,5 @@ def draw_board():
     1 |{board["a1"]}|{board["b1"]}|{board["c1"]}|{board["d1"]}|{board["e1"]}|{board["f1"]}|{board["g1"]}|{board["h1"]}|
        a b c d e f g h
     """
-    
+
 print(draw_board())
