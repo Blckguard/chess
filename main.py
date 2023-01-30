@@ -1,16 +1,22 @@
+import os
+
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
+
 class pieces:
     def __init__(self, id, location):
         self.id = id
         self.location = location
+        self.taken = False
 
-pieces_white = {'Ra': 'a1', 'Nb': 'b1', 'Bc': 'c1', 'Qd': 'd1', 'Ke': 'e1', 'Bf': 'f1', 'Ng': 'g1', 'Rh': 'h1',
-                    'Pa': 'a2', 'Pb': 'b2', 'Pc': 'c2', 'Pd': 'd2', 'Pe': 'e2', 'Pf': 'f2', 'Pg': 'g2', 'Ph': 'h2'}
-pieces_black = {'Ra': 'a8', 'Nb': 'b8', 'Bc': 'c8', 'Qd': 'd8', 'Ke': 'e8', 'Bf': 'f8', 'Ng': 'g8', 'Rh': 'h8',
-                    'Pa': 'a7', 'Pb': 'b7', 'Pc': 'c7', 'Pd': 'd7', 'Pe': 'e7', 'Pf': 'f7', 'Pg': 'g7', 'Ph': 'h7'}
-
-def create_objects(pieces_white, pieces_black):
+def create_objects():
     # creating two lists of objects containing the id and location of pieces using the piece_location list
     # returning list of objects for black and white =
+
+    pieces_white = {'Ra': 'a1', 'Nb': 'b1', 'Bc': 'c1', 'Qd': 'd1', 'Ke': 'e1', 'Bf': 'f1', 'Ng': 'g1', 'Rh': 'h1',
+                        'Pa': 'a2', 'Pb': 'b2', 'Pc': 'c2', 'Pd': 'd2', 'Pe': 'e2', 'Pf': 'f2', 'Pg': 'g2', 'Ph': 'h2'}
+    pieces_black = {'Ra': 'a8', 'Nb': 'b8', 'Bc': 'c8', 'Qd': 'd8', 'Ke': 'e8', 'Bf': 'f8', 'Ng': 'g8', 'Rh': 'h8',
+                        'Pa': 'a7', 'Pb': 'b7', 'Pc': 'c7', 'Pd': 'd7', 'Pe': 'e7', 'Pf': 'f7', 'Pg': 'g7', 'Ph': 'h7'}
 
     objects_white = []
     objects_black = []
@@ -25,10 +31,11 @@ def create_objects(pieces_white, pieces_black):
 
     return objects_white, objects_black
 
+objects_white, objects_black = create_objects()
+
 def create_board():
     # creates the board dictionary taking the location of pieces from the piece objects
     
-    objects_white, objects_black = create_objects(pieces_white, pieces_black)
     columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     minus_columns = ['b', 'd', 'f', 'h'] 
     board = {}
@@ -82,6 +89,53 @@ def draw_board():
     """
 
 def white_move():
-    pass
+    # takes a move from the player in the format "Ra1a4" = Rook a1 to a4
+    move = input('white to move: ')
 
-print(draw_board())
+    for white in objects_white:
+
+        black = objects_black[objects_white.index(white)]
+
+        if move[0] == white.id[0] and move[1:3] == white.location:
+            white.id = move[0:2]
+            white.location = move[3:5]
+
+        if white.location == black.location:
+            black.taken = True
+
+def black_move():
+    # takes a move from the player in the format "Ra1a4" = Rook a1 to a4
+
+    move = input('black to move: ')
+
+    for black in objects_black:
+
+        white = objects_white[objects_black.index(black)]
+
+        if move[0] == black.id[0] and move[1:3] == black.location:
+            black.id = move[0:2]
+            black.location = move[3:5]
+
+        if black.location == white.location:
+            white.taken = True
+
+def check_if_taken():
+
+    for white in objects_white:
+        if white.taken == True:
+            white.location = 0
+
+    for black in objects_black:
+        if black.taken == True:
+            black.location = 0
+
+for i in range(9):
+    cls()
+    print(draw_board())
+    white_move()
+    check_if_taken()
+    cls()
+    print(draw_board())
+    black_move()
+    check_if_taken()
+    cls()
