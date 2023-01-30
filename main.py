@@ -1,25 +1,25 @@
 # classes created already but not in use yet, will later use to assign unique id and
 # location coordinates in pairs f.e. (4,1) = d1 
-class white_pieces:
-    def __init__(self):
-        self.id
-        self.location
-
-    def update_values(self, id, location):
+class pieces:
+    def __init__(self, id, location):
         self.id = id
         self.location = location
 
-class black_pieces:
-    def __init__(self):
-        self.id
-        self.location
+piece_location = [['R', 'a1'], ['N', 'b1'], ['B', 'c1'], ['Q', 'd1'], ['K', 'e1'], ['B', 'f1'], ['N', 'g1'], ['R', 'h1'], ['P', 'a2'], ['P', 'b2'],
+                  ['P', 'c2'], ['P', 'd2'], ['P', 'e2'], ['P', 'f2'], ['P', 'g2'], ['P', 'h2'],
+                  ['R', 'a8'], ['N', 'b8'], ['B', 'c8'], ['Q', 'd8'], ['K', 'e8'], ['B', 'f8'], ['N', 'g8'], ['R', 'h8'], ['P', 'a7'], ['P', 'b7'],
+                  ['P', 'c7'], ['P', 'd7'], ['P', 'e7'], ['P', 'f7'], ['P', 'g7'], ['P', 'h7']]
 
-    def update_values(self, id, location):
-        self.id = id
-        self.location = location
+def create_objects(piece_location):
+    # creating a list of objects containing the id and location of pieces using the piece_location list
+    # returning list of objects 
+    piece_objects = []
 
-# note to self: create dictionary with piece and coordinate pairs so i can use that dict in the create_board function
-# do it smart so you can easily access the piece and coordinates for later use
+    for i in range(32):
+        a = pieces(piece_location[i][0], piece_location[i][1])
+        piece_objects.append(a)
+    return piece_objects
+
 def create_board():
     # creates the board dictionary without pieces yet
 
@@ -32,6 +32,7 @@ def create_board():
         # iterating through the columns and rows to create coordinate pairs which get added to the
         # dictionary together with a '+' for a white field or '-' for a black field
         if column in minus_columns:
+            counter = 2
             for row in range(1,9):
                 if counter % 2 == 1:
                     board[column + str(row)] = '+'
