@@ -1,33 +1,39 @@
-# classes created already but not in use yet, will later use to assign unique id and
-# location coordinates in pairs f.e. (4,1) = d1 
 class pieces:
     def __init__(self, id, location):
         self.id = id
         self.location = location
 
-piece_location = [['R', 'a1'], ['N', 'b1'], ['B', 'c1'], ['Q', 'd1'], ['K', 'e1'], ['B', 'f1'], ['N', 'g1'], ['R', 'h1'], ['P', 'a2'], ['P', 'b2'],
-                  ['P', 'c2'], ['P', 'd2'], ['P', 'e2'], ['P', 'f2'], ['P', 'g2'], ['P', 'h2'],
-                  ['R', 'a8'], ['N', 'b8'], ['B', 'c8'], ['Q', 'd8'], ['K', 'e8'], ['B', 'f8'], ['N', 'g8'], ['R', 'h8'], ['P', 'a7'], ['P', 'b7'],
-                  ['P', 'c7'], ['P', 'd7'], ['P', 'e7'], ['P', 'f7'], ['P', 'g7'], ['P', 'h7']]
+pieces_white = {'Ra': 'a1', 'Nb': 'b1', 'Bc': 'c1', 'Qd': 'd1', 'Ke': 'e1', 'Bf': 'f1', 'Ng': 'g1', 'Rh': 'h1',
+                    'Pa': 'a2', 'Pb': 'b2', 'Pc': 'c2', 'Pd': 'd2', 'Pe': 'e2', 'Pf': 'f2', 'Pg': 'g2', 'Ph': 'h2'}
+pieces_black = {'Ra': 'a8', 'Nb': 'b8', 'Bc': 'c8', 'Qd': 'd8', 'Ke': 'e8', 'Bf': 'f8', 'Ng': 'g8', 'Rh': 'h8',
+                    'Pa': 'a7', 'Pb': 'b7', 'Pc': 'c7', 'Pd': 'd7', 'Pe': 'e7', 'Pf': 'f7', 'Pg': 'g7', 'Ph': 'h7'}
 
-def create_objects(piece_location):
-    # creating a list of objects containing the id and location of pieces using the piece_location list
-    # returning list of objects 
-    piece_objects = []
+def create_objects(pieces_white, pieces_black):
+    # creating two lists of objects containing the id and location of pieces using the piece_location list
+    # returning list of objects for black and white =
 
-    for i in range(32):
-        a = pieces(piece_location[i][0], piece_location[i][1])
-        piece_objects.append(a)
-    return piece_objects
+    objects_white = []
+    objects_black = []
+
+    for id, location in pieces_white.items():
+        a = pieces(id, location)
+        objects_white.append(a)
+
+    for id, location in pieces_black.items():
+        a = pieces(id, location)
+        objects_black.append(a)
+
+    return objects_white, objects_black
 
 def create_board():
-    # creates the board dictionary without pieces yet
-
+    # creates the board dictionary taking the location of pieces from the piece objects
+    
+    objects_white, objects_black = create_objects(pieces_white, pieces_black)
     columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     minus_columns = ['b', 'd', 'f', 'h'] 
     board = {}
     counter = 2
-    
+
     for column in columns:
         # iterating through the columns and rows to create coordinate pairs which get added to the
         # dictionary together with a '+' for a white field or '-' for a black field
@@ -46,6 +52,17 @@ def create_board():
                 else:
                     board[column + str(row)] = '-'
                 counter += 1
+    
+    for field in board:
+        for piece in objects_white:
+            if field == piece.location:
+                board[field] = piece.id[0]
+
+    for field in board:
+        for piece in objects_black:
+            if field == piece.location:
+                board[field] = piece.id[0]
+
     return board
 
 def draw_board():
@@ -63,5 +80,8 @@ def draw_board():
     1 |{board["a1"]}|{board["b1"]}|{board["c1"]}|{board["d1"]}|{board["e1"]}|{board["f1"]}|{board["g1"]}|{board["h1"]}|
        a b c d e f g h
     """
+
+def white_move():
+    pass
 
 print(draw_board())
