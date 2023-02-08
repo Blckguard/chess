@@ -11,6 +11,7 @@ dict_white = {'Ra': 'a1', 'Nb': 'b1', 'Bc': 'c1', 'Qd': 'd1', 'Ke': 'e1', 'Bf': 
                         'Pa': 'a2', 'Pb': 'b2', 'Pc': 'c2', 'Pd': 'd2', 'Pe': 'e2', 'Pf': 'f2', 'Pg': 'g2', 'Ph': 'h2'}
 dict_black = {'Ra': 'a8', 'Nb': 'b8', 'Bc': 'c8', 'Qd': 'd8', 'Ke': 'e8', 'Bf': 'f8', 'Ng': 'g8', 'Rh': 'h8',
                         'Pa': 'a7', 'Pb': 'b7', 'Pc': 'c7', 'Pd': 'd7', 'Pe': 'e7', 'Pf': 'f7', 'Pg': 'g7', 'Ph': 'h7'}
+previous_moves = []
 
 def create_objects(objects):
 
@@ -80,18 +81,31 @@ def player_move(my_pieces, opponent_pieces, player):
 
     move = input(player + ' to move: ')
     piece_locations = [i.location for i in my_pieces]
+    opponent_locations = [i.location for i in opponent_pieces]
     columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
     successful = False
     while not successful:
         for my_piece in my_pieces:
 
-            opponent = opponent_pieces[my_pieces.index(my_piece)]
-            # successful move
+            # successful move and checks if piece was taken, changing '.location' to 0 and '.taken' to True
             if all([move[0:2] == my_piece.id, move[1:3] == my_piece.location, move[3:5] not in piece_locations]):
-                my_piece.id = move[0:2]
+                my_piece.id = move[0] + move[3]
                 my_piece.location = move[3:5]
                 successful = True
+
+                if len(previous_moves) < 8:
+                    previous_moves.append(f'{my_piece.id[0]}{my_piece.location}')
+                else:
+                    previous_moves.pop(0)
+                    previous_moves.append(f'{my_piece.id[0]}{my_piece.location}')
+
+                if my_piece.location in opponent_locations:
+                    opponent = opponent_pieces[opponent_locations.index(my_piece.location)]
+                    opponent.taken = True
+                    opponent.location = 0
+                    previous_moves[-1] = f'{my_piece.id[0]}x{my_piece.location}'
+
             # checks if the move is proper format
             elif len(move) != 5 or move[0].islower():
                 print('not proper format.\n')
@@ -99,10 +113,6 @@ def player_move(my_pieces, opponent_pieces, player):
             # checks if coordinates exist
             elif any([int(move[2]) > 8, int(move[2]) < 1, int(move[4]) > 8, int(move[4]) < 1, move[1] not in columns, move[3] not in columns]):
                 print('Coordinates don\'t exist\n ')
-                move = input('Try again: ')
-            # checks if player is trying to move opponent piece
-            elif move[0:2] == opponent.id and move[1:3] == opponent.location:
-                print('That is not your piece.\n')
                 move = input('Try again: ')
             # checks if piece exists on field
             elif move[1:3] not in piece_locations:
@@ -112,12 +122,6 @@ def player_move(my_pieces, opponent_pieces, player):
             elif move [3:5] in piece_locations:
                 print('There is already one of your pieces on that field.\n')
                 move = input('Try again: ')
-
-            # checks if piece was taken, if so changes 'location' to 0 and 'taken' to True
-            if my_piece.location == opponent.location:
-                opponent.taken = True
-                opponent.location = 0
-                print(opponent.id, opponent.location, opponent.taken)
 
 def taken_list(opponent_pieces):
 
@@ -142,6 +146,8 @@ def draw_board():
 
     board = create_board()
     return     f"""
+    {' '.join(previous_moves)}
+
     Black: {score_black} {' '.join(taken_black)}
     
     8 |{board["a8"]}|{board["b8"]}|{board["c8"]}|{board["d8"]}|{board["e8"]}|{board["f8"]}|{board["g8"]}|{board["h8"]}|
@@ -157,7 +163,7 @@ def draw_board():
     White: {score_white} {' '.join(taken_white)}
     """
 
-for i in range(9):
+for i in range(20):
     cls()
     print(draw_board())
     player_move(objects_white, objects_black, 'White')
