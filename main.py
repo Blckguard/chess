@@ -1,4 +1,5 @@
 import os
+from chess_rules import check_if_legal_white, check_if_legal_black
 
 class pieces:
     def __init__(self, id, location, value):
@@ -6,6 +7,7 @@ class pieces:
         self.location = location
         self.value = value
         self.taken = False
+        self.coordinate = 0
 
 dict_white = {'Ra': 'a1', 'Nb': 'b1', 'Bc': 'c1', 'Qd': 'd1', 'Ke': 'e1', 'Bf': 'f1', 'Ng': 'g1', 'Rh': 'h1',
                         'Pa': 'a2', 'Pb': 'b2', 'Pc': 'c2', 'Pd': 'd2', 'Pe': 'e2', 'Pf': 'f2', 'Pg': 'g2', 'Ph': 'h2'}
@@ -33,7 +35,7 @@ objects_white, objects_black = create_objects(dict_white), create_objects(dict_b
 
 def create_board():
 
-    # creates the board dictionary taking the location of pieces from the piece objects
+    # creates the board dictionary taking the location of pieces from the piece objects in pairs like: 'a1': '+'
 
     columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     minus_columns = ['b', 'd', 'f', 'h'] 
@@ -83,28 +85,33 @@ def player_move(my_pieces, opponent_pieces, player):
     piece_locations = [i.location for i in my_pieces]
     opponent_locations = [i.location for i in opponent_pieces]
     columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-
     successful = False
+
     while not successful:
         for my_piece in my_pieces:
 
             # successful move and checks if piece was taken, changing '.location' to 0 and '.taken' to True
             if all([move[0:2] == my_piece.id, move[1:3] == my_piece.location, move[3:5] not in piece_locations]):
-                my_piece.id = move[0] + move[3]
-                my_piece.location = move[3:5]
-                successful = True
 
-                if len(previous_moves) < 8:
-                    previous_moves.append(f'{my_piece.id[0]}{my_piece.location}')
+                if (player == 'White' and check_if_legal_white(move, my_pieces, opponent_pieces)) or (player == 'Black' and check_if_legal_black(move, my_pieces, opponent_pieces)):
+                    my_piece.id = move[0] + move[3]
+                    my_piece.location = move[3:5]
+                    successful = True
+
+                    if len(previous_moves) < 8:
+                        previous_moves.append(f'{my_piece.id[0]}{my_piece.location}')
+                    else:
+                        previous_moves.pop(0)
+                        previous_moves.append(f'{my_piece.id[0]}{my_piece.location}')
+
+                    if my_piece.location in opponent_locations:
+                        opponent = opponent_pieces[opponent_locations.index(my_piece.location)]
+                        opponent.taken = True
+                        opponent.location = 0
+                        previous_moves[-1] = f'{my_piece.id[0]}x{my_piece.location}'
                 else:
-                    previous_moves.pop(0)
-                    previous_moves.append(f'{my_piece.id[0]}{my_piece.location}')
-
-                if my_piece.location in opponent_locations:
-                    opponent = opponent_pieces[opponent_locations.index(my_piece.location)]
-                    opponent.taken = True
-                    opponent.location = 0
-                    previous_moves[-1] = f'{my_piece.id[0]}x{my_piece.location}'
+                    print('not a legal move.\n')
+                    move = input('Try again: ')
 
             # checks if the move is proper format
             elif len(move) != 5 or move[0].islower():
@@ -137,6 +144,18 @@ def taken_list(opponent_pieces):
 
     return taken_pieces, score
 
+def get_coordinates():
+
+    all_objects = objects_white + objects_black
+    conversion = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8'}
+
+    for piece in all_objects:
+        if piece.location == 0:
+            piece.coordinate = '00'
+        else:
+            piece.coordinate = conversion[piece.location[0]] + piece.location [1]
+
+
 def draw_board():
 
     # draws the board onto the console using the dictionary created in the create_board function and draws a list of taken pieces + the players score
@@ -166,7 +185,9 @@ def draw_board():
 for i in range(20):
     cls()
     print(draw_board())
+    get_coordinates()
     player_move(objects_white, objects_black, 'White')
     cls()
     print(draw_board())
+    get_coordinates()
     player_move(objects_black, objects_white, 'Black')
