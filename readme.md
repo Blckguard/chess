@@ -10,6 +10,11 @@ To-do:
 - [x] fix: can't capture, nor capture with backrow pieces
 - [x] display previous moves *(might later add proper formatting)*
 - [ ] check if move is legal. *(done for pawns except en passant)*
+--> [ ] check Rooks
+--> [ ] check Bishops
+--> [ ] check Queen
+--> [ ] check Knights
+--> [ ] check King
 - [ ] check if king is check
 - [ ] check if king is checkmate
 - [ ] create UI 
