@@ -1,4 +1,4 @@
-Simple chess project i am doing do practice Python.
+Simple chess project for me to practice Python.
 
 To-do:
 
