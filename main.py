@@ -183,11 +183,11 @@ def draw_board():
     """
 
 for i in range(20):
-    cls()
+    #cls()
     print(draw_board())
     get_coordinates()
     player_move(objects_white, objects_black, 'White')
-    cls()
+    #cls()
     print(draw_board())
     get_coordinates()
     player_move(objects_black, objects_white, 'Black')
