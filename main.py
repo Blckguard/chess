@@ -1,5 +1,5 @@
 import os
-from chess_rules import check_if_legal_white, check_if_legal_black
+from chess_rules import check_if_legal_white, check_if_legal_black, check_if_legal_uni
 
 class pieces:
     def __init__(self, id, location, value):
@@ -38,7 +38,7 @@ def create_board():
     # creates the board dictionary taking the location of pieces from the piece objects in pairs like: 'a1': '+'
 
     columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-    minus_columns = ['b', 'd', 'f', 'h'] 
+    minus_columns = ['b', 'd', 'f', 'h']
     board = {}
     counter = 2
 
@@ -60,7 +60,7 @@ def create_board():
                 else:
                     board[column + str(row)] = '-'
                 counter += 1
-    
+
     for field in board:
         for piece in objects_white:
             if field == piece.location:
@@ -75,11 +75,25 @@ def create_board():
 
 def cls():
     os.system('cls' if os.name=='nt' else 'clear')
+###############################################################################################################################################################################
 
+def testing(my_pieces):
+
+    move = input('Command: ')
+
+    if move == '':
+        return 0
+    elif move[0] == '$':
+        for my_piece in my_pieces:
+            if move[1:3] == my_piece.id and move[2:4] == my_piece.location:
+                my_piece.id = move[1] + move[4]
+                my_piece.location = move[4:6]
+
+###############################################################################################################################################################################
 def player_move(my_pieces, opponent_pieces, player):
 
     # takes a move from the player in the format "Ra1a4" = Rook a1 to a4, takes the first letter of the piece to move, the field where it is on,
-    # and the field where it's supposed to go. 
+    # and the field where it's supposed to go.
 
     move = input(player + ' to move: ')
     piece_locations = [i.location for i in my_pieces]
@@ -93,7 +107,7 @@ def player_move(my_pieces, opponent_pieces, player):
             # successful move and checks if piece was taken, changing '.location' to 0 and '.taken' to True
             if all([move[0:2] == my_piece.id, move[1:3] == my_piece.location, move[3:5] not in piece_locations]):
 
-                if (player == 'White' and check_if_legal_white(move, my_pieces, opponent_pieces)) or (player == 'Black' and check_if_legal_black(move, my_pieces, opponent_pieces)):
+                if (player == 'White' and check_if_legal_white(move, my_pieces, opponent_pieces)) or (player == 'Black' and check_if_legal_black(move, my_pieces, opponent_pieces)) or check_if_legal_uni(move, my_pieces, opponent_pieces):
                     my_piece.id = move[0] + move[3]
                     my_piece.location = move[3:5]
                     successful = True
@@ -168,7 +182,7 @@ def draw_board():
     {' '.join(previous_moves)}
 
     Black: {score_black} {' '.join(taken_black)}
-    
+
     8 |{board["a8"]}|{board["b8"]}|{board["c8"]}|{board["d8"]}|{board["e8"]}|{board["f8"]}|{board["g8"]}|{board["h8"]}|
     7 |{board["a7"]}|{board["b7"]}|{board["c7"]}|{board["d7"]}|{board["e7"]}|{board["f7"]}|{board["g7"]}|{board["h7"]}|
     6 |{board["a6"]}|{board["b6"]}|{board["c6"]}|{board["d6"]}|{board["e6"]}|{board["f6"]}|{board["g6"]}|{board["h6"]}|
@@ -182,12 +196,30 @@ def draw_board():
     White: {score_white} {' '.join(taken_white)}
     """
 
+'''test loop'''
+
+# for i in range(20):
+#     print(draw_board())
+#     get_coordinates()
+#     testing(objects_white)
+#     print(draw_board())
+#     get_coordinates()
+#     player_move(objects_white, objects_black, 'White')
+#     print(draw_board())
+#     get_coordinates()
+#     testing(objects_black)
+#     print(draw_board())
+#     get_coordinates()
+#     player_move(objects_black, objects_white, 'Black')
+
+'''proper loop'''
+
 for i in range(20):
-    #cls()
+    cls()
     print(draw_board())
     get_coordinates()
     player_move(objects_white, objects_black, 'White')
-    #cls()
+    cls()
     print(draw_board())
     get_coordinates()
     player_move(objects_black, objects_white, 'Black')
