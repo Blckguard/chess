@@ -1,5 +1,3 @@
-Simple chess project for me to practice Python.
-
 To-do:
 
 - [x] make player unable to move opponent pieces
