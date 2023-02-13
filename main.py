@@ -1,97 +1,61 @@
 import os
-from chess_rules import check_if_legal_white, check_if_legal_black, check_if_legal_uni
+from data.rules import *
+from data.modules import *
+from data.testing import *
 
 class pieces:
-    def __init__(self, id, location, value):
+    def __init__(self, id, location, value, coordinate):
         self.id = id
         self.location = location
         self.value = value
         self.taken = False
-        self.coordinate = 0
+        self.coordinate = coordinate
+
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
+
+def create_objects(dict_color):
+    # creating two lists of objects containing the id and location of pieces using the piece_location list
+    # returning list of objects for black and white
+
+    conversion = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8'}
+    values = {'R': 5, 'N': 3, 'B': 3, 'Q': 10, 'P': 1, 'K': 0}
+    object_list = []
+
+    for id, location in dict_color.items():
+        object_list.append(pieces(id, location, values[id[0]], conversion[location[0]] + location[1]))
+    return object_list
 
 dict_white = {'Ra': 'a1', 'Nb': 'b1', 'Bc': 'c1', 'Qd': 'd1', 'Ke': 'e1', 'Bf': 'f1', 'Ng': 'g1', 'Rh': 'h1',
                         'Pa': 'a2', 'Pb': 'b2', 'Pc': 'c2', 'Pd': 'd2', 'Pe': 'e2', 'Pf': 'f2', 'Pg': 'g2', 'Ph': 'h2'}
 dict_black = {'Ra': 'a8', 'Nb': 'b8', 'Bc': 'c8', 'Qd': 'd8', 'Ke': 'e8', 'Bf': 'f8', 'Ng': 'g8', 'Rh': 'h8',
                         'Pa': 'a7', 'Pb': 'b7', 'Pc': 'c7', 'Pd': 'd7', 'Pe': 'e7', 'Pf': 'f7', 'Pg': 'g7', 'Ph': 'h7'}
+objects_white, objects_black = create_objects(dict_white), create_objects(dict_black)
 previous_moves = []
 
-def create_objects(objects):
-
-    # creating two lists of objects containing the id and location of pieces using the piece_location list
-    # returning list of objects for black and white
-
-    values = {'R': 5, 'N': 3, 'B': 3, 'Q': 10, 'P': 1, 'K': 0}
-
-    object_list = []
-
-    for id, location in objects.items():
-        value = values[id[0]]
-        a = pieces(id, location, value)
-        object_list.append(a)
-
-    return object_list
-
-objects_white, objects_black = create_objects(dict_white), create_objects(dict_black)
-
 def create_board():
-
     # creates the board dictionary taking the location of pieces from the piece objects in pairs like: 'a1': '+'
 
     columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-    minus_columns = ['b', 'd', 'f', 'h']
     board = {}
-    counter = 2
+    taken_white = [piece.id[0] for piece in objects_white if piece.taken]
+    taken_black = [piece.id[0] for piece in objects_black if piece.taken]
+    score_black = sum([piece.value for piece in objects_white if piece.taken])
+    score_white = sum([piece.value for piece in objects_black if piece.taken])
 
-    for column in columns:
-        # iterating through the columns and rows to create coordinate pairs which get added to the
-        # dictionary together with a '+' for a white field or '-' for a black field
-        if column in minus_columns:
-            counter = 2
-            for row in range(1,9):
-                if counter % 2 == 1:
-                    board[column + str(row)] = '+'
-                else:
-                    board[column + str(row)] = '-'
-                counter += 1
-        else:
-            for row in range(1,9):
-                if counter % 2 == 0:
-                    board[column + str(row)] = '+'
-                else:
-                    board[column + str(row)] = '-'
-                counter += 1
+    for row in range(9):
+        for column in columns:
+            board[column + str(row)] = '-'
 
-    for field in board:
-        for piece in objects_white:
-            if field == piece.location:
-                board[field] = piece.id[0]
+    for piece in objects_white:
+        board[piece.location] = piece.id[0]
 
-    for field in board:
-        for piece in objects_black:
-            if field == piece.location:
-                board[field] = piece.id[0]
+    for piece in objects_black:
+        board[piece.location] = piece.id[0].lower()
 
-    return board
+    return board, taken_white, taken_black, score_white, score_black
 
-def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
-###############################################################################################################################################################################
-
-def testing(my_pieces):
-
-    move = input('Command: ')
-
-    if move == '':
-        return 0
-    elif move[0] == '$':
-        for my_piece in my_pieces:
-            if move[1:3] == my_piece.id and move[2:4] == my_piece.location:
-                my_piece.id = move[1] + move[4]
-                my_piece.location = move[4:6]
-
-###############################################################################################################################################################################
 def player_move(my_pieces, opponent_pieces, player):
-
     # takes a move from the player in the format "Ra1a4" = Rook a1 to a4, takes the first letter of the piece to move, the field where it is on,
     # and the field where it's supposed to go.
 
@@ -144,44 +108,15 @@ def player_move(my_pieces, opponent_pieces, player):
                 print('There is already one of your pieces on that field.\n')
                 move = input('Try again: ')
 
-def taken_list(opponent_pieces):
-
-    # takes list of objects and returns list of taken pieces and score of these pieces
-
-    score = 0
-    taken_pieces = []
-
-    for piece in opponent_pieces:
-        if piece.taken:
-            score += piece.value
-            taken_pieces.append(piece.id[0])
-
-    return taken_pieces, score
-
-def get_coordinates():
-
-    all_objects = objects_white + objects_black
-    conversion = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8'}
-
-    for piece in all_objects:
-        if piece.location == 0:
-            piece.coordinate = '00'
-        else:
-            piece.coordinate = conversion[piece.location[0]] + piece.location [1]
-
-
 def draw_board():
-
     # draws the board onto the console using the dictionary created in the create_board function and draws a list of taken pieces + the players score
 
-    taken_white, score_white = taken_list(objects_black)
-    taken_black, score_black = taken_list(objects_white)
+    board, taken_white, taken_black, score_white, score_black = create_board()
 
-    board = create_board()
-    return     f"""
+    print(f"""
     {' '.join(previous_moves)}
 
-    Black: {score_black} {' '.join(taken_black)}
+    Black: {score_black} {' '.join(taken_white)}
 
     8 |{board["a8"]}|{board["b8"]}|{board["c8"]}|{board["d8"]}|{board["e8"]}|{board["f8"]}|{board["g8"]}|{board["h8"]}|
     7 |{board["a7"]}|{board["b7"]}|{board["c7"]}|{board["d7"]}|{board["e7"]}|{board["f7"]}|{board["g7"]}|{board["h7"]}|
@@ -193,8 +128,8 @@ def draw_board():
     1 |{board["a1"]}|{board["b1"]}|{board["c1"]}|{board["d1"]}|{board["e1"]}|{board["f1"]}|{board["g1"]}|{board["h1"]}|
        a b c d e f g h
 
-    White: {score_white} {' '.join(taken_white)}
-    """
+    White: {score_white} {' '.join(taken_black)}
+    """)
 
 '''test loop'''
 
@@ -216,10 +151,8 @@ def draw_board():
 
 for i in range(20):
     cls()
-    print(draw_board())
-    get_coordinates()
+    draw_board()
     player_move(objects_white, objects_black, 'White')
     cls()
-    print(draw_board())
-    get_coordinates()
+    draw_board()
     player_move(objects_black, objects_white, 'Black')
