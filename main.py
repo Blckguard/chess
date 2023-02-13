@@ -56,6 +56,7 @@ def create_board():
     return board, taken_white, taken_black, score_white, score_black
 
 def player_move(my_pieces, opponent_pieces, player):
+
     # takes a move from the player in the format "Ra1a4" = Rook a1 to a4, takes the first letter of the piece to move, the field where it is on,
     # and the field where it's supposed to go.
 
@@ -130,6 +131,7 @@ def draw_board():
 
     White: {score_white} {' '.join(taken_black)}
     """)
+
 
 '''test loop'''
 
