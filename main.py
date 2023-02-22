@@ -1,9 +1,9 @@
 import os
 from data.rules import *
-from data.modules import *
-from data.testing import *
+from data.testing import testing
 
-class pieces:
+
+class Pieces:
     def __init__(self, id, location, value, coordinate):
         self.id = id
         self.location = location
@@ -11,20 +11,23 @@ class pieces:
         self.taken = False
         self.coordinate = coordinate
 
+
 def cls():
     os.system('cls' if os.name=='nt' else 'clear')
+
 
 def create_objects(dict_color):
     # creating two lists of objects containing the id and location of pieces using the piece_location list
     # returning list of objects for black and white
 
-    conversion = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8'}
+    conversion_table = {'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8'}
     values = {'R': 5, 'N': 3, 'B': 3, 'Q': 10, 'P': 1, 'K': 0}
     object_list = []
 
     for id, location in dict_color.items():
-        object_list.append(pieces(id, location, values[id[0]], conversion[location[0]] + location[1]))
+        object_list.append(Pieces(id, location, values[id[0]], conversion_table[location[0]] + location[1]))
     return object_list
+
 
 dict_white = {'Ra': 'a1', 'Nb': 'b1', 'Bc': 'c1', 'Qd': 'd1', 'Ke': 'e1', 'Bf': 'f1', 'Ng': 'g1', 'Rh': 'h1',
                         'Pa': 'a2', 'Pb': 'b2', 'Pc': 'c2', 'Pd': 'd2', 'Pe': 'e2', 'Pf': 'f2', 'Pg': 'g2', 'Ph': 'h2'}
@@ -32,6 +35,7 @@ dict_black = {'Ra': 'a8', 'Nb': 'b8', 'Bc': 'c8', 'Qd': 'd8', 'Ke': 'e8', 'Bf': 
                         'Pa': 'a7', 'Pb': 'b7', 'Pc': 'c7', 'Pd': 'd7', 'Pe': 'e7', 'Pf': 'f7', 'Pg': 'g7', 'Ph': 'h7'}
 objects_white, objects_black = create_objects(dict_white), create_objects(dict_black)
 previous_moves = []
+
 
 def create_board():
     # creates the board dictionary taking the location of pieces from the piece objects in pairs like: 'a1': '+'
@@ -55,10 +59,11 @@ def create_board():
 
     return board, taken_white, taken_black, score_white, score_black
 
+
 def player_move(my_pieces, opponent_pieces, player):
 
-    # takes a move from the player in the format "Ra1a4" = Rook a1 to a4, takes the first letter of the piece to move, the field where it is on,
-    # and the field where it's supposed to go.
+    # takes a move from the player in the format "Ra1a4" = Rook a1 to a4, takes the first letter of the piece to move,
+    # the field where it is on, and the field where it's supposed to go.
 
     move = input(player + ' to move: ')
     piece_locations = [i.location for i in my_pieces]
@@ -67,12 +72,16 @@ def player_move(my_pieces, opponent_pieces, player):
     successful = False
 
     while not successful:
+        if move == 'quit':
+            exit()
         for my_piece in my_pieces:
 
             # successful move and checks if piece was taken, changing '.location' to 0 and '.taken' to True
             if all([move[0:2] == my_piece.id, move[1:3] == my_piece.location, move[3:5] not in piece_locations]):
 
-                if (player == 'White' and check_if_legal_white(move, my_pieces, opponent_pieces)) or (player == 'Black' and check_if_legal_black(move, my_pieces, opponent_pieces)) or check_if_legal_uni(move, my_pieces, opponent_pieces):
+                if (player == 'White' and check_if_legal_white(move, my_pieces, opponent_pieces))\
+                        or (player == 'Black' and check_if_legal_black(move, my_pieces, opponent_pieces))\
+                        or check_if_legal_uni(move, my_pieces, opponent_pieces):
                     my_piece.id = move[0] + move[3]
                     my_piece.location = move[3:5]
                     successful = True
@@ -82,7 +91,6 @@ def player_move(my_pieces, opponent_pieces, player):
                     else:
                         previous_moves.pop(0)
                         previous_moves.append(f'{my_piece.id[0]}{my_piece.location}')
-
                     if my_piece.location in opponent_locations:
                         opponent = opponent_pieces[opponent_locations.index(my_piece.location)]
                         opponent.taken = True
@@ -97,7 +105,8 @@ def player_move(my_pieces, opponent_pieces, player):
                 print('not proper format.\n')
                 move = input('Try again: ')
             # checks if coordinates exist
-            elif any([int(move[2]) > 8, int(move[2]) < 1, int(move[4]) > 8, int(move[4]) < 1, move[1] not in columns, move[3] not in columns]):
+            elif any([int(move[2]) > 8, int(move[2]) < 1, int(move[4]) > 8, int(move[4]) < 1,
+                    move[1] not in columns, move[3] not in columns]):
                 print('Coordinates don\'t exist\n ')
                 move = input('Try again: ')
             # checks if piece exists on field
@@ -105,12 +114,14 @@ def player_move(my_pieces, opponent_pieces, player):
                 print('None of your pieces on that field.\n')
                 move = input('Try again: ')
             # checks if there is already a piece on the field to move to
-            elif move [3:5] in piece_locations:
+            elif move[3:5] in piece_locations:
                 print('There is already one of your pieces on that field.\n')
                 move = input('Try again: ')
 
+
 def draw_board():
-    # draws the board onto the console using the dictionary created in the create_board function and draws a list of taken pieces + the players score
+    # draws the board onto the console using the dictionary created in the create_board function and draws a list of
+    # taken pieces + the players score
 
     board, taken_white, taken_black, score_white, score_black = create_board()
 
@@ -133,28 +144,22 @@ def draw_board():
     """)
 
 
-'''test loop'''
-
-# for i in range(20):
-#     print(draw_board())
-#     get_coordinates()
-#     testing(objects_white)
-#     print(draw_board())
-#     get_coordinates()
-#     player_move(objects_white, objects_black, 'White')
-#     print(draw_board())
-#     get_coordinates()
-#     testing(objects_black)
-#     print(draw_board())
-#     get_coordinates()
-#     player_move(objects_black, objects_white, 'Black')
-
-'''proper loop'''
-
-for i in range(20):
-    cls()
-    draw_board()
-    player_move(objects_white, objects_black, 'White')
-    cls()
-    draw_board()
-    player_move(objects_black, objects_white, 'Black')
+mode = input('What is it you may want to do?: ')
+if mode == 'test':
+    for i in range(20):
+        print(draw_board())
+        testing(objects_white)
+        print(draw_board())
+        player_move(objects_white, objects_black, 'White')
+        print(draw_board())
+        testing(objects_black)
+        print(draw_board())
+        player_move(objects_black, objects_white, 'Black')
+elif mode == 'normal':
+    for i in range(20):
+        cls()
+        draw_board()
+        player_move(objects_white, objects_black, 'White')
+        cls()
+        draw_board()
+        player_move(objects_black, objects_white, 'Black')

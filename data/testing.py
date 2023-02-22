@@ -1,7 +1,8 @@
 def testing(my_pieces):
 
     move = input('Command: ')
-
+    if move == 'quit':
+        exit()
     if move == '':
         return 0
     elif move[0] == '$':
